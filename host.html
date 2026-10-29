@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- A stand-in for a contractor's own website, to test the embed from another origin. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Example Roofing Co. (test host page)</title>
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; margin: 0; color: #2b2118; background: #f6efe4; }
+  header { background: #7a2e1d; color: #fff; padding: 22px 28px; font-size: 26px; }
+  main { max-width: 760px; margin: 0 auto; padding: 28px 20px 80px; line-height: 1.6; }
+  h1 { margin-top: 0; }
+</style>
+</head>
+<body>
+<header>Example Roofing Co.</header>
+<main>
+  <h1>Roofs that outlast the storm</h1>
+  <p>Family owned since 1998. Free inspections. Ask about our 10 year workmanship warranty.</p>
+
+  <div id="leaddesk"></div>
+  <script src="http://localhost:8888/leaddesk.js"
+    data-business="Example Roofing Co."
+    data-title="Request a free estimate"
+    data-intro="Tell us about your project. We reply the same business day."
+    data-button="Request my estimate"
+    data-color="#FFD200"
+    data-services="Roof repair|Roof replacement|Storm or hail damage|Gutters"
+    data-phone="(214) 555-0100"
+    defer></script>
+
+  <p style="margin-top:40px">More page content below the form.</p>
+</main>
+</body>
+</html>
