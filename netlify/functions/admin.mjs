@@ -1,4 +1,4 @@
-ify/functions/// /api/admin/*  - password-protected lead panel API.
+// /api/admin/*  - password-protected lead panel API.
 import {
   leadStore, json, clean, cleanText, money, newId, passwordOk, makeToken, tokenOk,
   rateCount, rateAdd, businessName, STATUSES,
