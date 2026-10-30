@@ -3,435 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lead Desk: a free estimate form and lead list for contractors</title>
-<meta name="description" content="Put an estimate form on your website and track every lead in a private dashboard you own. Free and open source, made for roofers, remodelers and other contractors.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<meta name="robots" content="noindex, nofollow">
+<title>Your Lead Desk is running</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-  :root {
-    --concrete: #E9EAE7; --paper: #FFFFFF; --ink: #16262B; --soft: #44545D; --line: #B4BAB4;
-    --hi: #FFD200; --hi-deep: #F2C700; --rebar: #A12B1D; --level: #1B6030;
-    --wide: 'Archivo', 'Atkinson Hyperlegible', system-ui, sans-serif;
-    --body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  }
+  :root { --concrete:#E9EAE7; --ink:#16262B; --soft:#44545D; --hi:#FFD200; --level:#1B6030; --rebar:#A12B1D; }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--concrete); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
-  a { color: var(--ink); text-underline-offset: 3px; }
-  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-  .skip { position: absolute; left: -999px; top: 8px; background: var(--paper); padding: 8px 12px; border: 2px solid var(--ink); z-index: 10; }
-  .skip:focus { left: 8px; }
-
-  h1, h2, h3 { font-family: var(--wide); font-stretch: 112%; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
-  h1 { font-size: clamp(2.1rem, 4.6vw, 3.4rem); line-height: 1.06; }
-  h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); line-height: 1.12; }
-  h3 { font-size: 1.2rem; line-height: 1.25; font-stretch: 108%; }
-  p { margin: 0; }
-  .lede { font-size: 1.15rem; color: var(--soft); max-width: 36em; }
-
-  /* header */
-  header.top { padding: 18px 0; }
-  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  .mark { font-family: var(--wide); font-stretch: 125%; font-weight: 900; font-size: 1.25rem; text-decoration: none; letter-spacing: 0; }
-  nav.links { display: flex; gap: 22px; flex-wrap: wrap; font-size: 1rem; }
-  nav.links a { text-decoration: none; font-weight: 700; padding: 6px 0; border-bottom: 2px solid transparent; }
-  nav.links a:hover { border-bottom-color: var(--ink); }
-
-  /* buttons */
-  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 12px 22px; border: 2px solid var(--ink); border-radius: 6px; background: var(--paper); font: 700 1rem var(--body); text-decoration: none; color: var(--ink); cursor: pointer; }
-  .btn:hover { background: #F6F6F3; }
-  .btn-hi { background: var(--hi); }
-  .btn-hi:hover { background: var(--hi-deep); }
-  .btn-ink { background: var(--ink); color: #fff; }
-  .btn-ink:hover { background: #0D191D; }
-  .btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
-
-  /* hero */
-  .hero { padding: 36px 0 72px; }
-  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: start; }
-  .hero h1 { margin-bottom: 20px; }
-  .tryit { background: var(--paper); border: 2px solid var(--ink); border-radius: 8px; padding: 22px; }
-  .tryit h2 { font-size: 1.15rem; margin-bottom: 4px; }
-  .tryit > p { color: var(--soft); font-size: 1rem; margin-bottom: 16px; }
-  .tryit .ld-slot { margin-bottom: 20px; }
-  .inbox-h { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--ink); padding-bottom: 6px; margin-bottom: 4px; }
-  .inbox-h b { font-family: var(--wide); font-stretch: 108%; font-weight: 800; }
-  .inbox-h span { font-size: .9rem; color: var(--soft); }
-  #inbox { list-style: none; margin: 0; padding: 0; }
-  #inbox li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
-  #inbox li b { display: block; line-height: 1.3; overflow-wrap: anywhere; }
-  #inbox li small { color: var(--soft); font-size: .9rem; }
-  .pill { display: inline-block; flex: none; padding: 2px 10px; border-radius: 999px; font: 700 .85rem var(--body); background: #E1ECF7; color: #1A4673; }
-  .pill.new { background: var(--hi); color: var(--ink); }
-  @media (prefers-reduced-motion: no-preference) {
-    #inbox li.fresh { animation: drop .45s ease-out; }
-    @keyframes drop { from { opacity: 0; transform: translateY(-10px); background: var(--hi); } to { opacity: 1; transform: none; background: transparent; } }
-  }
-
-  /* sections */
-  section { padding: 72px 0; }
-  section.paper { background: var(--paper); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
-  .sec-h { margin-bottom: 36px; max-width: 40em; }
-  .sec-h p { margin-top: 12px; color: var(--soft); }
-
-  /* the three steps are a real sequence, so they are numbered */
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; counter-reset: s; }
-  .steps li { counter-increment: s; }
-  .steps li::before { content: counter(s); display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 14px; background: var(--hi); border: 2px solid var(--ink); border-radius: 6px; font: 800 1.3rem var(--wide); font-stretch: 112%; }
-  .steps h3 { margin-bottom: 8px; }
-  .steps p { color: var(--soft); }
-
-  /* setup */
-  .setup-step { border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); padding: 26px; margin-bottom: 28px; }
-  .setup-step > h3 { margin-bottom: 6px; }
-  .setup-step > .sub { color: var(--soft); margin-bottom: 18px; }
-  .setup-step ul { margin: 14px 0 0; padding-left: 1.2em; }
-  .setup-step li { margin-bottom: 6px; }
-  code, .code { font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: .92em; }
-  :not(pre) > code { background: #EEF0EC; padding: 1px 6px; border-radius: 4px; }
-
-  .gen { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
-  .gen form { display: grid; gap: 16px; }
-  label, legend { display: block; font-weight: 700; font-size: 1rem; margin-bottom: 6px; padding: 0; }
-  .hint { display: block; font-weight: 400; color: var(--soft); font-size: .92rem; margin-top: 4px; }
-  input[type=text], select, textarea { width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; font-size: 1rem; color: var(--ink); background: #fff; border: 1px solid #5d6b72; border-radius: 6px; }
-  textarea { min-height: 112px; resize: vertical; }
-  input[aria-invalid="true"] { border: 2px solid var(--rebar); }
-  .field-err { color: var(--rebar); font-weight: 700; font-size: .95rem; margin-top: 4px; min-height: 1.4em; }
-  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
-  .color-row { display: flex; gap: 12px; align-items: center; }
-  input[type=color] { width: 56px; height: 48px; padding: 3px; border: 1px solid #5d6b72; border-radius: 6px; background: #fff; cursor: pointer; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .preview-col { position: sticky; top: 16px; }
-  .preview-box { background: var(--concrete); border: 2px dashed var(--soft); border-radius: 8px; padding: 22px; }
-  .preview-cap { font-size: .95rem; color: var(--soft); margin-bottom: 10px; }
-  pre { margin: 0; background: var(--ink); color: #F4F6F5; padding: 18px; border-radius: 0 6px 6px 6px; overflow-x: auto; font-size: .85rem; line-height: 1.6; white-space: pre; tab-size: 2; }
-  .code-tab { display: inline-block; background: var(--hi); color: var(--ink); border: 2px solid var(--ink); border-bottom: 0; border-radius: 6px 6px 0 0; padding: 4px 12px; font-weight: 700; font-size: .9rem; margin-top: 22px; }
-  .code-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
-  #copied { font-weight: 700; color: var(--level); min-height: 1.5em; }
-  .warn { margin-top: 12px; padding: 10px 14px; background: #FFF4C2; border: 2px solid var(--ink); border-radius: 6px; font-size: .98rem; }
-
-  details { border-top: 1px solid var(--line); padding: 14px 0; }
-  details:last-of-type { border-bottom: 1px solid var(--line); }
-  summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
-  details p, details ol { margin-top: 10px; color: var(--soft); }
-  details ol { padding-left: 1.3em; }
-
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-  .two-col ul { margin: 14px 0 0; padding-left: 1.2em; }
-  .two-col li { margin-bottom: 8px; }
-
-  footer { padding: 36px 0 56px; font-size: .98rem; color: var(--soft); }
-  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-
-  @media (max-width: 900px) {
-    body { font-size: 17px; }
-    .hero .wrap, .gen, .two-col { grid-template-columns: 1fr; }
-    .steps { grid-template-columns: 1fr; }
-    .preview-col { position: static; }
-    section { padding: 52px 0; }
-    .hero { padding-bottom: 52px; }
-  }
-  @media (max-width: 520px) { .two { grid-template-columns: 1fr; } .setup-step { padding: 18px; } }
+  body { margin:0; background:var(--concrete); color:var(--ink); font-family:'Atkinson Hyperlegible', system-ui, sans-serif; font-size:18px; line-height:1.55; }
+  main { max-width:640px; margin:0 auto; padding:56px 20px; }
+  h1 { font-family:'Archivo', system-ui, sans-serif; font-stretch:112%; font-weight:800; font-size:clamp(1.8rem,5vw,2.4rem); line-height:1.1; margin:0 0 10px; }
+  .status { display:flex; gap:10px; align-items:center; margin:0 0 28px; font-weight:700; }
+  .dot { width:12px; height:12px; border-radius:50%; background:#8a948f; flex:none; }
+  .ok .dot { background:var(--level); } .bad .dot { background:var(--rebar); }
+  ol { list-style:none; counter-reset:s; padding:0; margin:0; }
+  li { counter-increment:s; background:#fff; border:2px solid var(--ink); border-radius:8px; padding:20px 22px 22px 70px; margin-bottom:16px; position:relative; }
+  li::before { content:counter(s); position:absolute; left:20px; top:18px; width:36px; height:36px; display:grid; place-items:center; background:var(--hi); border:2px solid var(--ink); border-radius:6px; font:800 1.15rem 'Archivo', sans-serif; }
+  h2 { font-size:1.15rem; margin:0 0 4px; }
+  p { margin:0 0 12px; color:var(--soft); }
+  .btn { display:inline-flex; align-items:center; min-height:48px; padding:10px 20px; border:2px solid var(--ink); border-radius:6px; background:var(--hi); color:var(--ink); font:700 1rem 'Atkinson Hyperlegible', sans-serif; text-decoration:none; }
+  .btn:hover { background:#F2C700; }
+  :focus-visible { outline:3px solid var(--ink); outline-offset:3px; }
+  code { background:#EEF0EC; padding:1px 6px; border-radius:4px; font-size:.92em; overflow-wrap:anywhere; }
+  .fix { display:none; background:#FFF4C2; border:2px solid var(--ink); border-radius:6px; padding:12px 14px; margin:0 0 24px; }
+  .fix p { color:var(--ink); margin:0; }
 </style>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
+<main>
+  <h1 id="biz">Your Lead Desk is running</h1>
+  <div class="status" id="status" role="status"><span class="dot"></span><span id="statusText">Checking your site...</span></div>
 
-<header class="top">
-  <div class="wrap">
-    <a class="mark" href="./">Lead Desk</a>
-    <nav class="links" aria-label="Main">
-      <a href="demo/">Live demo</a>
-      <a href="#setup">Set it up</a>
-      <a href="#limits">What you get</a>
-      <a class="repo-link" href="https://github.com/sabledescartes/leaddesk">GitHub</a>
-    </nav>
-  </div>
-</header>
+  <div class="fix" id="fix"><p><b>One thing left.</b> The dashboard password is not set yet. In Netlify open your site, go to <b>Site configuration</b>, then <b>Environment variables</b>, add <code>ADMIN_PASSWORD</code> (12 or more characters), then choose <b>Deploys</b> and <b>Trigger deploy</b>.</p></div>
 
-<main id="main">
-  <div class="hero">
-    <div class="wrap">
-      <div>
-        <h1>Every website lead in one list that belongs to you.</h1>
-        <p class="lede">Lead Desk is a free estimate form you paste into your website, plus a private dashboard to follow each lead from the first call to the signed job. No monthly fee, and nobody else sees your customers.</p>
-        <div class="btns">
-          <a class="btn btn-hi" href="demo/">Try the live demo</a>
-          <a class="btn" href="#setup">Set up your own copy</a>
-        </div>
-      </div>
-
-      <div class="tryit">
-        <h2>Try it right here</h2>
-        <p>Fill in the form like a customer would. Watch the lead land in the list below.</p>
-        <div class="ld-slot" id="heroForm"></div>
-        <div class="inbox-h"><b>Your lead list</b><span>Sample view</span></div>
-        <ul id="inbox" aria-live="polite"></ul>
-      </div>
-    </div>
-  </div>
-
-  <section class="paper" aria-labelledby="how-h">
-    <div class="wrap">
-      <div class="sec-h"><h2 id="how-h">How it works</h2></div>
-      <ol class="steps">
-        <li><h3>Put your own copy online</h3><p>One click installs Lead Desk on your free Netlify account. You choose the dashboard password. Your leads are stored in your account, not ours.</p></li>
-        <li><h3>Make your form</h3><p>Pick your trade, business name and color. You get a short piece of code.</p></li>
-        <li><h3>Paste it on your website</h3><p>Works on WordPress, Wix, Squarespace, Webflow and plain HTML. New leads show up at your own address, ending in <code>/admin</code>.</p></li>
-      </ol>
-    </div>
-  </section>
-
-  <section id="setup" aria-labelledby="setup-h">
-    <div class="wrap">
-      <div class="sec-h">
-        <h2 id="setup-h">Set it up in about 15 minutes</h2>
-        <p>You do not need to write code. You do need a free <a href="https://app.netlify.com/signup">Netlify</a> account and a free <a href="https://github.com/signup">GitHub</a> account.</p>
-      </div>
-
-      <div class="setup-step">
-        <h3>Step 1. Put your copy online</h3>
-        <p class="sub">Netlify will copy Lead Desk into your own GitHub and publish it.</p>
-        <a class="btn btn-ink" id="deployBtn" href="https://app.netlify.com/start/deploy?repository=https://github.com/sabledescartes/leaddesk">Deploy to Netlify</a>
-        <ul>
-          <li>Connect GitHub when Netlify asks.</li>
-          <li>Fill in <code>ADMIN_PASSWORD</code> (12 or more characters) and <code>BUSINESS_NAME</code>.</li>
-          <li>When it finishes, copy your site address. It looks like <code>amber-fox-1234.netlify.app</code>.</li>
-        </ul>
-      </div>
-
-      <div class="setup-step">
-        <h3>Step 2. Make your form</h3>
-        <p class="sub">Change anything on the left. The preview updates as you type.</p>
-        <div class="gen">
-          <form id="genForm" novalidate>
-            <div>
-              <label for="g-site">Your Lead Desk address<span class="hint">From step 1, like amber-fox-1234.netlify.app</span></label>
-              <input type="text" id="g-site" inputmode="url" autocomplete="off" spellcheck="false" placeholder="amber-fox-1234.netlify.app">
-              <div class="field-err" id="siteErr" role="alert"></div>
-            </div>
-            <div class="two">
-              <div><label for="g-biz">Business name</label><input type="text" id="g-biz" value="Example Roofing Co."></div>
-              <div><label for="g-trade">Trade</label>
-                <select id="g-trade"></select></div>
-            </div>
-            <div>
-              <label for="g-services">Services in the menu<span class="hint">One per line. Leave empty to hide the menu.</span></label>
-              <textarea id="g-services"></textarea>
-            </div>
-            <div class="two">
-              <div><label for="g-title">Heading</label><input type="text" id="g-title" value="Request a free estimate"></div>
-              <div><label for="g-button">Button text</label><input type="text" id="g-button" value="Request my estimate"></div>
-            </div>
-            <div>
-              <label for="g-intro">Line under the heading <span class="hint" style="display:inline">(optional)</span></label>
-              <input type="text" id="g-intro" value="Tell us about your project. We reply the same business day.">
-            </div>
-            <div class="two">
-              <div><label for="g-phone">Your phone number<span class="hint">Shown if something goes wrong</span></label><input type="text" id="g-phone" inputmode="tel" placeholder="(214) 555-0100"></div>
-              <div><label for="g-color">Button color</label>
-                <div class="color-row"><input type="color" id="g-color" value="#FFD200"><code id="g-color-hex">#FFD200</code></div></div>
-            </div>
-          </form>
-
-          <div class="preview-col">
-            <p class="preview-cap">Preview of your form</p>
-            <div class="preview-box"><div id="genPreview"></div></div>
-          </div>
-        </div>
-
-        <div class="code-tab">Your code</div>
-        <pre id="codeOut" tabindex="0" aria-label="Embed code"></pre>
-        <div class="code-actions">
-          <button class="btn btn-ink" type="button" id="copyBtn">Copy code</button>
-          <span id="copied" role="status"></span>
-        </div>
-        <div class="warn" id="siteWarn">Add your Lead Desk address above first. Until then the code points at a placeholder and the form will not work.</div>
-      </div>
-
-      <div class="setup-step">
-        <h3>Step 3. Paste it on your website</h3>
-        <p class="sub">Paste the code where you want the form to appear.</p>
-        <details><summary>WordPress</summary><ol><li>Open the page in the editor.</li><li>Add a block named <b>Custom HTML</b>.</li><li>Paste the code and update the page.</li></ol></details>
-        <details><summary>Wix</summary><ol><li>In the editor choose <b>Add</b>, then <b>Embed Code</b>, then <b>Embed HTML</b>.</li><li>Choose <b>Code</b> and paste it in.</li><li>Stretch the box tall enough for the form, about 700 pixels.</li></ol></details>
-        <details><summary>Squarespace</summary><ol><li>Edit the page and add a <b>Code</b> block.</li><li>Turn off <b>Display Source</b>, then paste the code.</li></ol></details>
-        <details><summary>Webflow</summary><ol><li>Drag an <b>Embed</b> element onto the page.</li><li>Paste the code and publish.</li></ol></details>
-        <details><summary>Plain HTML</summary><p>Paste the code into the page where the form should show.</p></details>
-        <p style="margin-top:18px;color:var(--soft)">Some site builders block pasted code on their cheapest plans. If yours does, ask their support to allow it, or link your button to a page that does.</p>
-        <p style="margin-top:14px"><b>Then test it.</b> Send yourself a lead from your live site, then sign in at <code>your-address/admin</code>. It should be at the top of the list.</p>
-      </div>
-
-      <details>
-        <summary>Optional: get an alert on your phone for each new lead</summary>
-        <p>Make a Slack or Discord incoming webhook (or a Zapier or Make webhook that sends you a text or email). In Netlify open <b>Site configuration</b>, then <b>Environment variables</b>, add <code>NOTIFY_WEBHOOK_URL</code> with that address, and deploy again.</p>
-      </details>
-      <details>
-        <summary>Optional: only allow your own website to send leads</summary>
-        <p>Add an environment variable named <code>ALLOWED_ORIGINS</code> with your site address, like <code>https://www.yourcompany.com</code>. Separate several with commas. Deploy again.</p>
-      </details>
-    </div>
-  </section>
-
-  <section class="paper" id="limits" aria-labelledby="limits-h">
-    <div class="wrap">
-      <div class="sec-h"><h2 id="limits-h">What you get, and what you do not</h2></div>
-      <div class="two-col">
-        <div>
-          <h3>Included</h3>
-          <ul>
-            <li>An estimate form that fits any website and works on phones.</li>
-            <li>A dashboard with statuses from New to Won, notes, estimated and final prices, search and CSV export.</li>
-            <li>Spam protection: a hidden trap field, a speed check and a limit per visitor.</li>
-            <li>Optional alerts through a Slack, Discord, Zapier or Make webhook.</li>
-            <li>Full ownership. Delete any lead for good, or delete the whole site.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Not included</h3>
-          <ul>
-            <li>Texts or emails to your customers. It tells you about leads, it does not message them.</li>
-            <li>Separate logins. Everyone who has the password sees every lead.</li>
-            <li>Support from Netlify. Their free plan has limits, so check what it covers today.</li>
-            <li>A privacy policy. If you collect customer details, your own site needs one.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="faq-h">
-    <div class="wrap">
-      <div class="sec-h"><h2 id="faq-h">Questions</h2></div>
-      <details><summary>Is it really free?</summary><p>Lead Desk is free and open source under the MIT license. It runs on your own Netlify account, which has a free plan that is enough for a small contractor. Netlify can change its plans, so read what they offer before you rely on it.</p></details>
-      <details><summary>Where are my customers' details kept?</summary><p>In your Netlify account, in storage only your site can reach. This project has no server of its own and never receives your leads.</p></details>
-      <details><summary>Can I change the questions on the form?</summary><p>You can change the heading, button, color and services here. To add or remove fields you edit <code>leaddesk.js</code> in your copy of the project. It is one short file.</p></details>
-      <details><summary>What if I forget the dashboard password?</summary><p>Open your site in Netlify, go to <b>Environment variables</b>, set a new <code>ADMIN_PASSWORD</code> and deploy again. Your leads stay where they are.</p></details>
-    </div>
-  </section>
+  <ol>
+    <li><h2>Make your form</h2><p>Pick your trade, name and color, then copy the code. Your address is filled in for you.</p><a class="btn" id="genLink" href="https://sabledescartes.github.io/leaddesk/">Open the form maker</a></li>
+    <li><h2>Paste it on your website</h2><p>Put the code where the form should show. The form maker has steps for WordPress, Wix, Squarespace and Webflow.</p></li>
+    <li><h2>Watch the leads come in</h2><p>Sign in to your dashboard with the password you chose.</p><a class="btn" href="/admin/">Open the dashboard</a></li>
+  </ol>
 </main>
-
-<footer>
-  <div class="wrap">
-    <span>Lead Desk is open source under the MIT license. Not affiliated with Netlify.</span>
-    <a class="repo-link" href="https://github.com/sabledescartes/leaddesk">Source code on GitHub</a>
-  </div>
-</footer>
-
-<script src="app/leaddesk.js" data-manual></script>
 <script>
 (function () {
-  'use strict';
-  var REPO = 'https://github.com/sabledescartes/leaddesk';
-  document.querySelectorAll('.repo-link').forEach(function (a) { a.href = REPO; });
-  document.getElementById('deployBtn').href = 'https://app.netlify.com/start/deploy?repository=' + REPO;
-
-  function $(id) { return document.getElementById(id); }
-
-  // ---------- hero: working preview of the form + a sample lead list
-  var rows = [
-    { name: 'Marcus Bell', what: 'Roof repair, Frisco', when: '2 hr ago', fresh: false, status: 'Contacted' },
-    { name: 'Priya Raman', what: 'Kitchen remodel, Allen', when: 'Yesterday', fresh: false, status: 'Quoted' }
-  ];
-  function paintInbox(freshFirst) {
-    var ul = $('inbox'); ul.innerHTML = '';
-    rows.slice(0, 4).forEach(function (r, i) {
-      var li = document.createElement('li');
-      if (freshFirst && i === 0) li.className = 'fresh';
-      var left = document.createElement('div'), b = document.createElement('b'), s = document.createElement('small');
-      b.textContent = r.name; s.textContent = r.what + ', ' + r.when; left.appendChild(b); left.appendChild(s);
-      var pill = document.createElement('span'); pill.className = 'pill' + (r.status === 'New' ? ' new' : ''); pill.textContent = r.status;
-      li.appendChild(left); li.appendChild(pill); ul.appendChild(li);
-    });
-  }
-  paintInbox(false);
-  LeadDesk.render($('heroForm'), {
-    business: 'Example Roofing Co.', title: 'Request a free estimate', intro: 'Tell us about your project.',
-    button: 'Request my estimate', color: '#FFD200',
-    services: ['Roof repair', 'Roof replacement', 'Kitchen remodel', 'Fence install']
-  }, { preview: true });
-  $('heroForm').addEventListener('leaddesk:preview-submit', function (e) {
-    var d = e.detail;
-    rows.unshift({ name: d.name, what: (d.service || 'Estimate request') + (d.city ? ', ' + d.city : ''), when: 'just now', status: 'New' });
-    paintInbox(true);
-  });
-
-  // ---------- generator
-  var TRADES = {
-    'Roofing': ['Roof repair', 'Roof replacement', 'Storm or hail damage', 'Gutters', 'Inspection'],
-    'Remodeling': ['Kitchen remodel', 'Bathroom remodel', 'Room addition', 'Flooring', 'Whole-home remodel'],
-    'Pavers and hardscape': ['Paver patio', 'Driveway', 'Retaining wall', 'Outdoor kitchen', 'Walkway'],
-    'Garage doors': ['New garage door', 'Door repair', 'Opener install', 'Spring replacement'],
-    'HVAC': ['AC repair', 'New system install', 'Heating repair', 'Maintenance plan', 'Duct work'],
-    'Plumbing': ['Leak repair', 'Water heater', 'Drain cleaning', 'Repipe', 'Fixture install'],
-    'Electrical': ['Panel upgrade', 'Lighting', 'EV charger', 'Rewiring', 'Troubleshooting'],
-    'Painting': ['Interior painting', 'Exterior painting', 'Cabinet painting', 'Deck staining'],
-    'Landscaping': ['Lawn care', 'Landscape design', 'Sod install', 'Irrigation', 'Tree trimming'],
-    'Fencing and decks': ['Wood fence', 'Metal fence', 'New deck', 'Deck repair', 'Pergola'],
-    'Windows and doors': ['Window replacement', 'Entry door', 'Patio door', 'Window tint'],
-    'Solar': ['Rooftop solar', 'Battery backup', 'Panel cleaning', 'System check'],
-    'General contractor': ['New build', 'Remodel', 'Repairs', 'Commercial buildout']
-  };
-  var tradeSel = $('g-trade');
-  Object.keys(TRADES).forEach(function (t) { var o = document.createElement('option'); o.textContent = t; tradeSel.appendChild(o); });
-  function loadTrade() { $('g-services').value = TRADES[tradeSel.value].join('\n'); }
-  loadTrade();
-
-  function attr(v) { return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  function host(v) {
-    v = v.trim(); if (!v) return '';
-    try {
-      var u = new URL(/^https?:\/\//i.test(v) ? v : 'https://' + v);
-      if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(u.hostname)) return null;
-      return 'https://' + u.hostname.toLowerCase();
-    } catch (e) { return null; }
-  }
-  function config() {
-    return {
-      business: $('g-biz').value.trim(), title: $('g-title').value.trim() || 'Request a free estimate',
-      intro: $('g-intro').value.trim(), button: $('g-button').value.trim() || 'Request my estimate',
-      color: $('g-color').value, phone: $('g-phone').value.trim(),
-      services: $('g-services').value.split('\n').map(function (s) { return s.trim().replace(/\|/g, '/'); }).filter(Boolean)
-    };
-  }
-  function snippet() {
-    var c = config(), h = host($('g-site').value);
-    var src = (h || 'https://YOUR-ADDRESS.netlify.app') + '/leaddesk.js';
-    var lines = ['<div id="leaddesk"></div>', '<script src="' + attr(src) + '"'];
-    function add(k, v) { if (v) lines.push('  data-' + k + '="' + attr(v) + '"'); }
-    add('business', c.business); add('title', c.title); add('intro', c.intro); add('button', c.button);
-    add('color', c.color); add('services', c.services.join('|')); add('phone', c.phone);
-    lines.push('  defer></' + 'script>');
-    return lines.join('\n');
-  }
-  var timer;
-  function update() {
-    var h = host($('g-site').value);
-    $('siteErr').textContent = h === null ? 'That does not look like a web address. Example: amber-fox-1234.netlify.app' : '';
-    $('g-site').setAttribute('aria-invalid', h === null ? 'true' : 'false');
-    $('siteWarn').hidden = !!h;
-    $('g-color-hex').textContent = $('g-color').value.toUpperCase();
-    $('codeOut').textContent = snippet();
-    LeadDesk.render($('genPreview'), config(), { preview: true });
-  }
-  function later() { clearTimeout(timer); timer = setTimeout(update, 120); }
-  ['g-site', 'g-biz', 'g-services', 'g-title', 'g-button', 'g-intro', 'g-phone', 'g-color'].forEach(function (id) { $(id).addEventListener('input', later); });
-  tradeSel.addEventListener('change', function () { loadTrade(); update(); });
-
-  // Opened from the "your site is running" page: fill in the address.
-  var site = new URLSearchParams(location.search).get('site');
-  if (site) $('g-site').value = site;
-  update();
-
-  $('copyBtn').addEventListener('click', function () {
-    var text = $('codeOut').textContent, done = function () { $('copied').textContent = 'Copied. Paste it into your website.'; setTimeout(function () { $('copied').textContent = ''; }, 3500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
-    function fallback() {
-      var r = document.createRange(); r.selectNodeContents($('codeOut')); var s = getSelection(); s.removeAllRanges(); s.addRange(r);
-      try { document.execCommand('copy'); done(); } catch (e) { $('copied').textContent = 'Select the code and copy it by hand.'; }
-    }
+  var GEN = 'https://sabledescartes.github.io/leaddesk/';
+  document.getElementById('genLink').href = GEN + '?site=' + encodeURIComponent(location.host) + '#setup';
+  var st = document.getElementById('status'), tx = document.getElementById('statusText');
+  fetch('/api/admin/config').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (c) {
+    if (c.business && c.business !== 'Lead Desk') document.getElementById('biz').textContent = c.business + ' Lead Desk is running';
+    st.className = 'status ok'; tx.textContent = 'Connected. Your lead storage is ready.';
+    if (!c.ready) document.getElementById('fix').style.display = 'block';
+  }).catch(function () {
+    st.className = 'status bad';
+    tx.textContent = 'The lead storage did not answer. Wait a minute and reload. If it keeps failing, check Netlify > Deploys for errors.';
   });
 })();
 </script>
