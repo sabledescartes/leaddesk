@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Your Lead Desk is running</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root { --concrete:#E9EAE7; --ink:#16262B; --soft:#44545D; --hi:#FFD200; --level:#1B6030; --rebar:#A12B1D; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--concrete); color:var(--ink); font-family:'Atkinson Hyperlegible', system-ui, sans-serif; font-size:18px; line-height:1.55; }
+  main { max-width:640px; margin:0 auto; padding:56px 20px; }
+  h1 { font-family:'Archivo', system-ui, sans-serif; font-stretch:112%; font-weight:800; font-size:clamp(1.8rem,5vw,2.4rem); line-height:1.1; margin:0 0 10px; }
+  .status { display:flex; gap:10px; align-items:center; margin:0 0 28px; font-weight:700; }
+  .dot { width:12px; height:12px; border-radius:50%; background:#8a948f; flex:none; }
+  .ok .dot { background:var(--level); } .bad .dot { background:var(--rebar); }
+  ol { list-style:none; counter-reset:s; padding:0; margin:0; }
+  li { counter-increment:s; background:#fff; border:2px solid var(--ink); border-radius:8px; padding:20px 22px 22px 70px; margin-bottom:16px; position:relative; }
+  li::before { content:counter(s); position:absolute; left:20px; top:18px; width:36px; height:36px; display:grid; place-items:center; background:var(--hi); border:2px solid var(--ink); border-radius:6px; font:800 1.15rem 'Archivo', sans-serif; }
+  h2 { font-size:1.15rem; margin:0 0 4px; }
+  p { margin:0 0 12px; color:var(--soft); }
+  .btn { display:inline-flex; align-items:center; min-height:48px; padding:10px 20px; border:2px solid var(--ink); border-radius:6px; background:var(--hi); color:var(--ink); font:700 1rem 'Atkinson Hyperlegible', sans-serif; text-decoration:none; }
+  .btn:hover { background:#F2C700; }
+  :focus-visible { outline:3px solid var(--ink); outline-offset:3px; }
+  code { background:#EEF0EC; padding:1px 6px; border-radius:4px; font-size:.92em; overflow-wrap:anywhere; }
+  .fix { display:none; background:#FFF4C2; border:2px solid var(--ink); border-radius:6px; padding:12px 14px; margin:0 0 24px; }
+  .fix p { color:var(--ink); margin:0; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="biz">Your Lead Desk is running</h1>
+  <div class="status" id="status" role="status"><span class="dot"></span><span id="statusText">Checking your site...</span></div>
+
+  <div class="fix" id="fix"><p><b>One thing left.</b> The dashboard password is not set yet. In Netlify open your site, go to <b>Site configuration</b>, then <b>Environment variables</b>, add <code>ADMIN_PASSWORD</code> (12 or more characters), then choose <b>Deploys</b> and <b>Trigger deploy</b>.</p></div>
+
+  <ol>
+    <li><h2>Make your form</h2><p>Pick your trade, name and color, then copy the code. Your address is filled in for you.</p><a class="btn" id="genLink" href="https://sabledescartes.github.io/leaddesk/">Open the form maker</a></li>
+    <li><h2>Paste it on your website</h2><p>Put the code where the form should show. The form maker has steps for WordPress, Wix, Squarespace and Webflow.</p></li>
+    <li><h2>Watch the leads come in</h2><p>Sign in to your dashboard with the password you chose.</p><a class="btn" href="/admin/">Open the dashboard</a></li>
+  </ol>
+</main>
+<script>
+(function () {
+  var GEN = 'https://sabledescartes.github.io/leaddesk/';
+  document.getElementById('genLink').href = GEN + '?site=' + encodeURIComponent(location.host) + '#setup';
+  var st = document.getElementById('status'), tx = document.getElementById('statusText');
+  fetch('/api/admin/config').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (c) {
+    if (c.business && c.business !== 'Lead Desk') document.getElementById('biz').textContent = c.business + ' Lead Desk is running';
+    st.className = 'status ok'; tx.textContent = 'Connected. Your lead storage is ready.';
+    if (!c.ready) document.getElementById('fix').style.display = 'block';
+  }).catch(function () {
+    st.className = 'status bad';
+    tx.textContent = 'The lead storage did not answer. Wait a minute and reload. If it keeps failing, check Netlify > Deploys for errors.';
+  });
+})();
+</script>
+</body>
+</html>
