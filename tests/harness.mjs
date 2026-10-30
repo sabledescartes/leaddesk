@@ -14,10 +14,11 @@ export function getStore(opts) {
   if (!stores.has(name)) stores.set(name, new Map());
   const m = stores.get(name);
   return {
-    async get(k, o) { const v = m.get(k); if (v === undefined) return null; return o && o.type === "json" ? JSON.parse(v) : v; },
+    async get(k, o) { const v = m.get(k); if (v === undefined) return null; if (o && o.type === "json") return JSON.parse(v); if (o && o.type === "arrayBuffer") return typeof v === "string" ? new TextEncoder().encode(v).buffer : v; return v; },
     async setJSON(k, v) { m.set(k, JSON.stringify(v)); },
+    async set(k, v) { m.set(k, v instanceof ArrayBuffer ? v.slice(0) : v); },
     async delete(k) { m.delete(k); },
-    async list() { return { blobs: [...m.keys()].map((key) => ({ key })) }; },
+    async list(o) { const pre = (o && o.prefix) || ""; return { blobs: [...m.keys()].filter((k) => k.startsWith(pre)).map((key) => ({ key })) }; },
   };
 }
 `;
@@ -33,7 +34,9 @@ export async function loadFunctions() {
   const imp = (f) => import(pathToFileURL(path.join(tmp, "netlify", f)).href);
   return {
     lead: (await imp("functions/lead.mjs")).default,
-    admin: (await imp("functions/admin.mjs")).default,
+    auth: (await imp("functions/auth.mjs")).default,
+    app: (await imp("functions/app.mjs")).default,
+    estimate: (await imp("functions/estimate.mjs")).default,
     stores: () => globalThis.__leaddeskStores,
     reset: () => globalThis.__leaddeskStores && globalThis.__leaddeskStores.clear(),
   };

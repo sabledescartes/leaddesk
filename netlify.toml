@@ -1,4 +1,4 @@
-# Lead Desk - Netlify config
+# Lead Desk - Netlify config. One hosted site serves every contractor account.
 [build]
   publish = "app"
   command = "echo 'static site, nothing to build'"
@@ -7,30 +7,62 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# Netlify shows these as boxes on the "Deploy to Netlify" screen.
-# The text is a hint, not a default: type your own values.
-[template.environment]
-  ADMIN_PASSWORD = "Choose a long password, 12 or more characters. You sign in to /admin with it."
-  BUSINESS_NAME = "Your business name, shown on the sign-in screen"
+# Clean addresses for sign-in and sign-up.
+[[redirects]]
+  from = "/login"
+  to = "/auth/index.html"
+  status = 200
+[[redirects]]
+  from = "/signup"
+  to = "/auth/index.html"
+  status = 200
+# Old address from the self-hosted version.
+[[redirects]]
+  from = "/admin/*"
+  to = "/dashboard/"
+  status = 301
 
-# The embed script is loaded from other websites.
+# The form script is loaded by contractors' own websites.
 [[headers]]
   for = "/leaddesk.js"
   [headers.values]
     Access-Control-Allow-Origin = "*"
     Cross-Origin-Resource-Policy = "cross-origin"
-    Cache-Control = "public, max-age=3600"
+    Cache-Control = "public, max-age=300"
 
 [[headers]]
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[headers]]
-  for = "/admin/*"
+  for = "/dashboard/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+
+[[headers]]
+  for = "/auth/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+
+# The landing page shows the demo in a frame, so only our own pages may frame it.
+[[headers]]
+  for = "/demo/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self'; base-uri 'none'"
+
+[[headers]]
+  for = "/e/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
     Cache-Control = "no-store"
     X-Frame-Options = "DENY"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"

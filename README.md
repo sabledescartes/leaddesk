@@ -1,93 +1,71 @@
 # Lead Desk
 
-A free estimate form for your website, and a private dashboard to track every lead from first call to signed job. Built for roofers, remodelers and other contractors. Open source, no monthly fee, and your customers' details stay in your own account.
+A free estimate form for contractors' websites, and a clean dashboard to call back, quote and win every lead.
 
-**[Live demo](https://sabledescartes.github.io/leaddesk/demo/)** · **[Set it up](https://sabledescartes.github.io/leaddesk/#setup)**
+Contractors create an account, style their form, paste two lines of code on their website, and every request shows up in their own private lead list. One hosted Lead Desk serves every account. The code is open source under the MIT license.
 
-## What it does
+## What a contractor gets
 
-- **A form you paste into any website.** Works on WordPress, Wix, Squarespace, Webflow and plain HTML. It takes its font from your site and works on phones.
-- **A dashboard at `your-site.netlify.app/admin`.** Leads move through New, Contacted, Quoted, Booked, Won and Lost. Add notes, an estimated job value and a final price. Search, filter by service, export to CSV.
-- **Spam protection.** A hidden trap field, a "filled in too fast" check and a limit of 8 leads per visitor per hour. Wrong dashboard passwords lock a visitor out after 10 tries per hour.
-- **Optional alerts.** Send each new lead to Slack, Discord, Zapier or Make with a webhook.
-- **You own the data.** Everything is stored in your Netlify account. Archive a lead, then delete it for good.
-
-## Set up (about 15 minutes, no code)
-
-1. **Put your copy online.** Click *Deploy to Netlify* on the [setup page](https://sabledescartes.github.io/leaddesk/#setup). Connect GitHub when asked and fill in `ADMIN_PASSWORD` (12 or more characters) and `BUSINESS_NAME`.
-2. **Make your form.** On the same page, enter your site address, pick your trade and color, and copy the code.
-3. **Paste it into your website** where the form should show. Send yourself a test lead, then sign in at `your-site.netlify.app/admin`.
-
-## The embed code
-
-```html
-<div id="leaddesk"></div>
-<script src="https://YOUR-ADDRESS.netlify.app/leaddesk.js"
-  data-business="Example Roofing Co."
-  data-title="Request a free estimate"
-  data-button="Request my estimate"
-  data-color="#FFD200"
-  data-services="Roof repair|Roof replacement|Gutters"
-  data-phone="(214) 555-0100"
-  defer></script>
-```
-
-| Attribute | What it does |
-| --- | --- |
-| `data-business` | Your company name, used in the thank-you message |
-| `data-title` | Heading above the form |
-| `data-intro` | One short line under the heading |
-| `data-button` | Text on the submit button |
-| `data-color` | Button color as `#rrggbb` |
-| `data-services` | Choices in the service menu, separated by `\|`. Leave out to hide the menu |
-| `data-phone` | Shown in the thank-you and in error messages |
-| `data-target` | CSS selector of where to put the form. Default is `#leaddesk` |
-
-## Settings (Netlify environment variables)
-
-| Variable | Required | What it does |
-| --- | --- | --- |
-| `ADMIN_PASSWORD` | Yes | Password for `/admin`. 8 or more characters. Without it the dashboard refuses to open |
-| `BUSINESS_NAME` | No | Name on the sign-in screen and in alerts |
-| `NOTIFY_WEBHOOK_URL` | No | `https://` webhook that receives each new lead. Sends `text`, `content` and `lead` fields |
-| `ALLOWED_ORIGINS` | No | Comma separated list of sites allowed to send leads, like `https://www.yourcompany.com`. Empty means any site |
-
-Changing a variable needs a new deploy: **Deploys > Trigger deploy** in Netlify.
-
-## What it does not do
-
-- It does not message your customers. It tells you about leads. Use a webhook through Zapier or Make if you want an email or text alert.
-- There are no separate logins. Anyone with the password sees every lead.
-- It is not a support plan. Netlify's free plan has limits, so check what it covers today.
-- It is not a privacy policy. If you collect customer details, your website needs one.
+- **A website form in two lines of code.** Works on WordPress, Wix, Squarespace, Webflow, Shopify and plain HTML. The heading, services, phone number and button color are set in the dashboard, and the website updates by itself.
+- **A form page link** (`/f/?k=...`) for contractors without a website: Google Business Profile, Instagram bio, texts.
+- **A lead dashboard.** Overview with weekly numbers and pipeline value, a list and a drag-and-drop board, a detail panel with one-tap call and email, notes, estimate and final price, full history, archive and delete forever, CSV export.
+- **Customer photos.** Visitors can add up to 3 photos to the form. They are shrunk on the phone before sending and saved with the lead.
+- **Tasks.** Follow-ups with a date, from a lead or on their own. Overview shows what is due today, and the menu shows how many are due.
+- **Estimates.** Line items, tax and an expiry date. The customer gets a private link to view, download as PDF, and accept by typing their name, or decline. An accepted estimate marks the lead won with the final price.
+- **Files.** Attach PDFs, measurements or contracts to a lead (up to 4 MB each, 250 MB per account). Every photo and file in one place.
+- **Notifications.** New leads, follow-ups that are due, and customers opening, accepting or declining estimates.
+- **Alerts** to Slack, Discord, Zapier or Make through a webhook, including accepted estimates.
+- **Spam protection**: a hidden trap field, a "filled in too fast" check, 8 leads per visitor per hour per contractor, and 120 per contractor per hour.
+- **Security**: passwords hashed with scrypt, signed httpOnly session cookies, other websites cannot call the dashboard API, optional list of websites allowed to send leads, form key rotation, password change signs out other devices, account deletion removes every lead.
 
 ## How it is built
 
 ```
-app/                  what Netlify serves
-  leaddesk.js         the embeddable form (no dependencies, Shadow DOM)
-  admin/index.html    the dashboard (one file, no build step)
-  index.html          "your site is running" page
-netlify/functions/    lead.mjs (public form endpoint), admin.mjs (password protected API)
-netlify/lib/store.mjs shared helpers: storage, sessions, rate limits, CORS
-index.html            setup page with the form maker, served by GitHub Pages
-demo/index.html       the dashboard on made-up data, generated by scripts/build-demo.mjs
-tests/                backend tests and a local dev server
+app/                      what Netlify serves
+  index.html              landing page
+  auth/index.html         sign in and sign up (/login, /signup)
+  dashboard/index.html    the dashboard (one file, no build step)
+  demo/index.html         the dashboard on sample data (generated)
+  f/index.html            hosted form page
+  e/index.html            estimate page the customer opens from their link
+  leaddesk.js             the embeddable form (no dependencies, Shadow DOM)
+  assets/ui.css           shared styles
+  privacy/, terms/        policy pages
+netlify/functions/
+  auth.mjs                /api/auth/*  signup, login, logout, me
+  app.mjs                 /api/app/*   leads and settings for the signed-in account
+  lead.mjs                /api/lead and /api/form/<key>, called by contractors' websites
+  estimate.mjs            /api/estimate/<token>, the customer's view, accept and decline
+netlify/lib/store.mjs     storage, accounts, sessions, files, rate limits
+netlify/lib/estimate.mjs  estimate totals, added up in cents
+tests/                    backend tests and a local dev server
 ```
 
-Leads are stored with [Netlify Blobs](https://docs.netlify.com/blobs/overview/). The admin session is a signed token that lasts 12 hours and is derived from `ADMIN_PASSWORD`, so changing the password signs everyone out.
+Data is stored in [Netlify Blobs](https://docs.netlify.com/blobs/overview/). Each lead is saved under its account id, and every dashboard call is scoped to the account in the session cookie.
+
+## Run your own copy
+
+1. Fork this repository and import it in Netlify (**Add new site > Import an existing project**). No build settings are needed.
+2. Optional: set `SESSION_SECRET` (32 or more random characters) in **Site configuration > Environment variables**. Without it, Lead Desk makes one on first use and keeps it in storage.
+3. Open the site and create the first account.
 
 ## Develop
 
 Needs Node 18 or newer.
 
 ```bash
-npm test          # backend tests, no network, about 10 seconds
-npm run dev       # local preview: app on :8888, setup page and demo on :8889
-node scripts/build-demo.mjs   # after editing app/admin/index.html
+npm test                      # backend tests, no network
+npm run dev                   # site on :8888, fake contractor website on :8889
+node scripts/build-demo.mjs   # after editing app/dashboard/index.html
 ```
 
-`npm run dev` keeps data in memory and uses the password `test-password-123`.
+`npm run dev` keeps data in memory. To test the form from another website, copy your key from Form & code and open `http://localhost:8889/tests/fixtures/host.html?key=YOUR_KEY`.
+
+## Not yet included
+
+- Password reset by email, and sending estimates by email from Lead Desk itself (both need an email provider). Today the Email and Text buttons open the contractor's own mail or messages app with the link filled in.
+- Team members on one account.
+- Changing the sign-in email.
 
 ## License
 

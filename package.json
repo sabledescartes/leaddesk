@@ -1,7 +1,7 @@
 {
   "name": "leaddesk",
   "version": "1.0.0",
-  "description": "Free, self-hosted website lead form and mini CRM for contractors.",
+  "description": "Free hosted website lead form and lead dashboard for contractors.",
   "private": true,
   "type": "module",
   "license": "MIT",
