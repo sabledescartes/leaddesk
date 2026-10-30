@@ -2,6 +2,10 @@
 
 A free estimate form for contractors' websites, and a clean dashboard to call back, quote and win every lead.
 
+**[Use it free at leaddesk-app.netlify.app](https://leaddesk-app.netlify.app)**, or click around the **[live demo](https://leaddesk-app.netlify.app/demo/)** first.
+
+![Lead Desk dashboard](docs/leads.png)
+
 Contractors create an account, style their form, paste two lines of code on their website, and every request shows up in their own private lead list. One hosted Lead Desk serves every account. The code is open source under the MIT license.
 
 ## What a contractor gets
@@ -17,6 +21,14 @@ Contractors create an account, style their form, paste two lines of code on thei
 - **Alerts** to Slack, Discord, Zapier or Make through a webhook, including accepted estimates.
 - **Spam protection**: a hidden trap field, a "filled in too fast" check, 8 leads per visitor per hour per contractor, and 120 per contractor per hour.
 - **Security**: passwords hashed with scrypt, signed httpOnly session cookies, other websites cannot call the dashboard API, optional list of websites allowed to send leads, form key rotation, password change signs out other devices, account deletion removes every lead.
+
+## Screenshots
+
+| Overview | Lead detail |
+| --- | --- |
+| ![Overview](docs/overview.png) | ![Lead detail with follow-ups and customer photos](docs/lead-detail.png) |
+| **Estimate editor** | **What the customer sees** |
+| ![Estimate editor](docs/estimate-editor.png) | ![Customer estimate page](docs/customer-estimate.png) |
 
 ## How it is built
 
@@ -39,6 +51,7 @@ netlify/functions/
 netlify/lib/store.mjs     storage, accounts, sessions, files, rate limits
 netlify/lib/estimate.mjs  estimate totals, added up in cents
 tests/                    backend tests and a local dev server
+docs/                     screenshots for this page
 ```
 
 Data is stored in [Netlify Blobs](https://docs.netlify.com/blobs/overview/). Each lead is saved under its account id, and every dashboard call is scoped to the account in the session cookie.
